@@ -43,7 +43,6 @@ public class PointX {
         return "PointX{" +
                 "x=" + x +
                 ", y=" + y +
-                ", priority=" + priority +
                 '}';
     }
 

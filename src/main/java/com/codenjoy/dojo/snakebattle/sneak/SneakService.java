@@ -22,6 +22,8 @@ public class SneakService {
         PointX location = new PointX(sneak.getX(), sneak.getY());
         PointX appleLocation = findApple(board);
 
+        System.out.println("GOAL - " + board.getAimType(appleLocation));
+
         RoutService routService = new RoutService();
 
         Direction direction = routService.getDirection(board, sneak, location, appleLocation);
@@ -44,9 +46,7 @@ public class SneakService {
         Map<Double, PointX> map = new HashMap<>();
         findAllApple(board).forEach(a -> map.put(getPointDist(location, a), a));
 
-        double key = map.keySet().stream().mapToDouble(a -> a).min().getAsDouble();
-
-        return map.get(key);
+        return map.get(map.keySet().stream().mapToDouble(a -> a).min().getAsDouble());
     }
 
     private List<PointX> findAllApple(Board board) {
@@ -58,20 +58,43 @@ public class SneakService {
 
         for (int x = MIN; x < MAX; x++) {
             for (int y = MIN; y < MAX; y++) {
-                if (board.isApple(x, y) || board.isGold(x, y)) {
-                    list.add(new PointX(x, y));
-                } else if (board.isStone(x, y) && mySneakSize >= SNEAK_MIN_SIZE && snakeCount > 2) {
-                    list.add(new PointX(x, y));
-                } else if (board.isEnemyHead(x, y)) {
-                    if (snakeCount == 1 && mySneakSize > totalSneakSize) {
-                        list.add(new PointX(x, y));
-                    } else if (snakeCount == 2 && mySneakSize > totalSneakSize - 3) {
-                        list.add(new PointX(x, y));
+                PointX pointX = new PointX(x, y);
+
+                if (isAimReachable(board, pointX)) {
+                    if (board.isApple(x, y) || board.isGold(x, y)) {
+                        list.add(pointX);
+                    } else if (board.isStone(x, y) && mySneakSize >= SNEAK_MIN_SIZE &&
+                            (snakeCount >= 2 || mySneakSize > totalSneakSize * 2)) {
+                        list.add(pointX);
+                    } else if (board.isEnemyHead(x, y)) {
+                        if (snakeCount == 1 && mySneakSize > totalSneakSize) {
+                            list.add(pointX);
+                        } else if (snakeCount == 2 && mySneakSize - 2 > totalSneakSize - 3) {
+                            list.add(pointX);
+                        }
                     }
                 }
             }
         }
         return list;
+    }
+
+    private boolean isAimReachable(Board board, PointX pointX) {
+        int stoneCount = 0;
+
+        if (board.isWall(pointX.getX() + 1, pointX.getY())) {
+            stoneCount += 1;
+        }
+        if (board.isWall(pointX.getX() - 1, pointX.getY())) {
+            stoneCount += 1;
+        }
+        if (board.isWall(pointX.getX(), pointX.getY() + 1)) {
+            stoneCount += 1;
+        }
+        if (board.isWall(pointX.getX(), pointX.getY() - 1)) {
+            stoneCount += 1;
+        }
+       return stoneCount <= 1;
     }
 
     private double getPointDist(PointX a, PointX b) {

@@ -57,8 +57,7 @@ public class YourSolver implements Solver<Board> {
     public String get(Board board) {
         this.board = board;
         if (board.isGameOver()) {
-            System.out.println("GAME OVER");
-            return "";
+            return "GAME OVER";
         }
 
         SneakService sneakService = new SneakService();
