@@ -52,12 +52,22 @@ public class SneakService {
     private List<PointX> findAllApple(Board board) {
         List<PointX> list = new ArrayList<>();
 
+        int mySneakSize = board.getSneakSize();
+        int snakeCount = board.getEnemyHeads().size();
+        int totalSneakSize = board.getEnemies().size();
+
         for (int x = MIN; x < MAX; x++) {
             for (int y = MIN; y < MAX; y++) {
                 if (board.isApple(x, y) || board.isGold(x, y)) {
                     list.add(new PointX(x, y));
-                } else if (board.isStone(x, y) && board.getSneakSize() >= SNEAK_MIN_SIZE) {
+                } else if (board.isStone(x, y) && mySneakSize >= SNEAK_MIN_SIZE && snakeCount > 2) {
                     list.add(new PointX(x, y));
+                } else if (board.isEnemyHead(x, y)) {
+                    if (snakeCount == 1 && mySneakSize > totalSneakSize) {
+                        list.add(new PointX(x, y));
+                    } else if (snakeCount == 2 && mySneakSize > totalSneakSize - 3) {
+                        list.add(new PointX(x, y));
+                    }
                 }
             }
         }

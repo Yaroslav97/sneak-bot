@@ -37,7 +37,21 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.BODY_LEFT_UP;
 import static com.codenjoy.dojo.snakebattle.model.Elements.BODY_RIGHT_DOWN;
 import static com.codenjoy.dojo.snakebattle.model.Elements.BODY_RIGHT_UP;
 import static com.codenjoy.dojo.snakebattle.model.Elements.BODY_VERTICAL;
+import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_BODY_HORIZONTAL;
+import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_BODY_LEFT_DOWN;
+import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_BODY_LEFT_UP;
+import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_BODY_RIGHT_DOWN;
+import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_BODY_RIGHT_UP;
+import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_BODY_VERTICAL;
+import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_DOWN;
+import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_LEFT;
+import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_RIGHT;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_SLEEP;
+import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_UP;
+import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_TAIL_END_DOWN;
+import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_TAIL_END_LEFT;
+import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_TAIL_END_RIGHT;
+import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_TAIL_END_UP;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_TAIL_INACTIVE;
 import static com.codenjoy.dojo.snakebattle.model.Elements.FLYING_PILL;
 import static com.codenjoy.dojo.snakebattle.model.Elements.FURY_PILL;
@@ -75,6 +89,20 @@ public class Board extends AbstractBoard<Elements> {
 
     public boolean isApple(int x, int y) {
         return isAt(x, y, APPLE);
+    }
+
+    public boolean isEnemyHead(int x, int y) {
+        return isAt(x, y, ENEMY_HEAD_DOWN, ENEMY_HEAD_UP, ENEMY_HEAD_RIGHT, ENEMY_HEAD_LEFT);
+    }
+
+    public List<Point> getEnemyHeads() {
+        return get(ENEMY_HEAD_DOWN, ENEMY_HEAD_UP, ENEMY_HEAD_RIGHT, ENEMY_HEAD_LEFT);
+    }
+
+    public List<Point> getEnemies() {
+        return get(ENEMY_HEAD_DOWN, ENEMY_HEAD_UP, ENEMY_HEAD_RIGHT, ENEMY_HEAD_LEFT,
+                ENEMY_TAIL_END_DOWN, ENEMY_TAIL_END_LEFT, ENEMY_TAIL_END_UP, ENEMY_TAIL_END_RIGHT, ENEMY_TAIL_INACTIVE,
+                ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP);
     }
 
     public boolean isGold(int x, int y) {
@@ -125,7 +153,4 @@ public class Board extends AbstractBoard<Elements> {
                 BODY_HORIZONTAL, BODY_VERTICAL, BODY_RIGHT_UP, BODY_RIGHT_DOWN, BODY_LEFT_UP, BODY_LEFT_DOWN).size();
     }
 
-    public boolean isStoneAt(int x, int y) {
-        return isAt(x, y, STONE);
-    }
 }
