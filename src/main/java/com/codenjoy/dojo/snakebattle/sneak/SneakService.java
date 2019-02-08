@@ -15,6 +15,7 @@ public class SneakService {
     public static final int SNEAK_MIN_SIZE = 5;
     private static final int MIN = 1;
     private static final int MAX = 28;
+    private static final int SNAKE_BASE_SIZE = 3;
 
     public Direction getRout(Board board) {
 
@@ -56,6 +57,10 @@ public class SneakService {
         int snakeCount = board.getEnemyHeads().size();
         int totalSneakSize = board.getEnemies().size();
 
+        if (snakeCount == 1) {
+            System.out.println("Enemy size - " + totalSneakSize);
+        }
+
         for (int x = MIN; x < MAX; x++) {
             for (int y = MIN; y < MAX; y++) {
                 PointX pointX = new PointX(x, y);
@@ -67,9 +72,9 @@ public class SneakService {
                             (snakeCount >= 2 || mySneakSize > totalSneakSize * 2)) {
                         list.add(pointX);
                     } else if (board.isEnemyHead(x, y)) {
-                        if (snakeCount == 1 && mySneakSize > totalSneakSize) {
+                        if (snakeCount == 1 && mySneakSize - 3 > totalSneakSize) {
                             list.add(pointX);
-                        } else if (snakeCount == 2 && mySneakSize - 2 > totalSneakSize - 3) {
+                        } else if (snakeCount > 1 && mySneakSize - 3 > totalSneakSize - SNAKE_BASE_SIZE * snakeCount ) {
                             list.add(pointX);
                         }
                     }
