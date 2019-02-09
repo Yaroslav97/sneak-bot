@@ -17,6 +17,8 @@ public class SneakService {
     private static final int MAX = 28;
     private static final int SNAKE_BASE_SIZE = 3;
 
+    private RoutService routService= new RoutService();
+
     public Direction getRout(Board board) {
 
         Point sneak = board.getMe();
@@ -25,9 +27,7 @@ public class SneakService {
 
         System.out.println("GOAL - " + board.getAimType(appleLocation));
 
-        RoutService routService = new RoutService();
-
-        if (isDeadLock(board, appleLocation)) {
+        if (routService.isDeadLock(board, appleLocation)) {
             return routService.avoidStraitDeadlock(board);
         }
 
@@ -69,7 +69,7 @@ public class SneakService {
             for (int y = MIN; y <= MAX; y++) {
                 PointX pointX = new PointX(x, y);
 
-                if (isAimReachable(board, pointX)) {
+                if (routService.isAimReachable(board, pointX)) {
                     if (board.isApple(x, y) || board.isGold(x, y)) {
                         list.add(pointX);
                     } else if (board.isStone(x, y) && mySneakSize >= SNEAK_MIN_SIZE &&
@@ -91,68 +91,6 @@ public class SneakService {
             }
         }
         return list;
-    }
-
-    private boolean isDeadLock(Board board, PointX pointX) {
-        int wallCount = 0;
-
-        if (board.getDirection() == Direction.UP) {
-            if (board.isWall(pointX.getX() + 1, pointX.getY() + 1)
-                    && !board.isWall(pointX.getX(), pointX.getY() + 1)) {
-                wallCount += 1;
-            }
-            if (board.isWall(pointX.getX() - 1, pointX.getY() + 1)
-                    && !board.isWall(pointX.getX(), pointX.getY() + 1)) {
-                wallCount += 1;
-            }
-        } else if (board.getDirection() == Direction.LEFT) {
-            if (board.isWall(pointX.getX() - 1, pointX.getY() + 1)
-                    && !board.isWall(pointX.getX() - 1, pointX.getY())) {
-                wallCount += 1;
-            }
-            if (board.isWall(pointX.getX() - 1, pointX.getY() - 1)
-                    && !board.isWall(pointX.getX() - 1, pointX.getY())) {
-                wallCount += 1;
-            }
-        } else if (board.getDirection() == Direction.DOWN) {
-            if (board.isWall(pointX.getX() - 1, pointX.getY() - 1)
-                    && !board.isWall(pointX.getX(), pointX.getY() - 1)) {
-                wallCount += 1;
-            }
-            if (board.isWall(pointX.getX() + 1, pointX.getY() - 1)
-                    && !board.isWall(pointX.getX() - 1, pointX.getY() - 1)) {
-                wallCount += 1;
-            }
-        } else if (board.getDirection() == Direction.RIGHT) {
-            if (board.isWall(pointX.getX() + 1, pointX.getY() - 1)
-                    && !board.isWall(pointX.getX(), pointX.getY() - 1)) {
-                wallCount += 1;
-            }
-            if (board.isWall(pointX.getX(), pointX.getY() - 2)
-                    && !board.isWall(pointX.getX(), pointX.getY() - 1)) {
-                wallCount += 1;
-            }
-        }
-
-        return wallCount == 2;
-    }
-
-    private boolean isAimReachable(Board board, PointX pointX) {
-        int stoneCount = 0;
-
-        if (board.isWall(pointX.getX() + 1, pointX.getY())) {
-            stoneCount += 1;
-        }
-        if (board.isWall(pointX.getX() - 1, pointX.getY())) {
-            stoneCount += 1;
-        }
-        if (board.isWall(pointX.getX(), pointX.getY() + 1)) {
-            stoneCount += 1;
-        }
-        if (board.isWall(pointX.getX(), pointX.getY() - 1)) {
-            stoneCount += 1;
-        }
-        return stoneCount <= 1;
     }
 
     private double getPointDist(PointX a, PointX b) {

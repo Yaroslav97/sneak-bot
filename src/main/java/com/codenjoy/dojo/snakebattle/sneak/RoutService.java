@@ -218,6 +218,68 @@ public class RoutService {
         return findSafetyWay(board);
     }
 
+    public boolean isDeadLock(Board board, PointX pointX) {
+        int wallCount = 0;
+
+        if (board.getDirection() == Direction.UP) {
+            if (board.isWall(pointX.getX() + 1, pointX.getY() + 1)
+                    && !board.isWall(pointX.getX(), pointX.getY() + 1)) {
+                wallCount += 1;
+            }
+            if (board.isWall(pointX.getX() - 1, pointX.getY() + 1)
+                    && !board.isWall(pointX.getX(), pointX.getY() + 1)) {
+                wallCount += 1;
+            }
+        } else if (board.getDirection() == Direction.LEFT) {
+            if (board.isWall(pointX.getX() - 1, pointX.getY() + 1)
+                    && !board.isWall(pointX.getX() - 1, pointX.getY())) {
+                wallCount += 1;
+            }
+            if (board.isWall(pointX.getX() - 1, pointX.getY() - 1)
+                    && !board.isWall(pointX.getX() - 1, pointX.getY())) {
+                wallCount += 1;
+            }
+        } else if (board.getDirection() == Direction.DOWN) {
+            if (board.isWall(pointX.getX() - 1, pointX.getY() - 1)
+                    && !board.isWall(pointX.getX(), pointX.getY() - 1)) {
+                wallCount += 1;
+            }
+            if (board.isWall(pointX.getX() + 1, pointX.getY() - 1)
+                    && !board.isWall(pointX.getX() - 1, pointX.getY() - 1)) {
+                wallCount += 1;
+            }
+        } else if (board.getDirection() == Direction.RIGHT) {
+            if (board.isWall(pointX.getX() + 1, pointX.getY() - 1)
+                    && !board.isWall(pointX.getX(), pointX.getY() - 1)) {
+                wallCount += 1;
+            }
+            if (board.isWall(pointX.getX(), pointX.getY() - 2)
+                    && !board.isWall(pointX.getX(), pointX.getY() - 1)) {
+                wallCount += 1;
+            }
+        }
+
+        return wallCount == 2;
+    }
+
+    public boolean isAimReachable(Board board, PointX pointX) {
+        int stoneCount = 0;
+
+        if (board.isWall(pointX.getX() + 1, pointX.getY())) {
+            stoneCount += 1;
+        }
+        if (board.isWall(pointX.getX() - 1, pointX.getY())) {
+            stoneCount += 1;
+        }
+        if (board.isWall(pointX.getX(), pointX.getY() + 1)) {
+            stoneCount += 1;
+        }
+        if (board.isWall(pointX.getX(), pointX.getY() - 1)) {
+            stoneCount += 1;
+        }
+        return stoneCount <= 1;
+    }
+
     private boolean isSafety(Board board, PointX pointX) {
         if (board.isStone(pointX.getX(), pointX.getY()) && board.getSneakSize() < SNEAK_MIN_SIZE) {
             return false;
