@@ -54,7 +54,6 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_TAIL_END_LEFT;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_TAIL_END_RIGHT;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_TAIL_END_UP;
 import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_TAIL_INACTIVE;
-import static com.codenjoy.dojo.snakebattle.model.Elements.FLYING_PILL;
 import static com.codenjoy.dojo.snakebattle.model.Elements.FURY_PILL;
 import static com.codenjoy.dojo.snakebattle.model.Elements.GOLD;
 import static com.codenjoy.dojo.snakebattle.model.Elements.HEAD_DOWN;
@@ -103,15 +102,16 @@ public class Board extends AbstractBoard<Elements> {
     public List<Point> getEnemies() {
         return get(ENEMY_HEAD_DOWN, ENEMY_HEAD_UP, ENEMY_HEAD_RIGHT, ENEMY_HEAD_LEFT,
                 ENEMY_TAIL_END_DOWN, ENEMY_TAIL_END_LEFT, ENEMY_TAIL_END_UP, ENEMY_TAIL_END_RIGHT, ENEMY_TAIL_INACTIVE,
-                ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP);
+                ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN,
+                ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP);
     }
 
     public boolean isGold(int x, int y) {
         return isAt(x, y, GOLD);
     }
 
-    public boolean isPill(int x, int y) {
-        return isAt(x, y, FURY_PILL, FLYING_PILL);
+    public boolean isFuryPill(int x, int y) {
+        return isAt(x, y, FURY_PILL);
     }
 
     public boolean isStone(int x, int y) {
@@ -187,15 +187,22 @@ public class Board extends AbstractBoard<Elements> {
         return Direction.STOP;
     }
 
-
     private List<Point> getMyHead() {
         return get(HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_SLEEP, HEAD_EVIL, HEAD_FLY);
     }
 
+    public boolean isFuryActive() {
+        return !get(HEAD_EVIL).isEmpty();
+    }
+
     public int getSneakSize() {
+        return getMySneak().size();
+    }
+
+    public List<Point> getMySneak() {
         return get(HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_SLEEP, HEAD_EVIL, HEAD_FLY,
                 TAIL_END_DOWN, TAIL_END_UP, TAIL_END_RIGHT, TAIL_END_UP, TAIL_INACTIVE,
-                BODY_HORIZONTAL, BODY_VERTICAL, BODY_RIGHT_UP, BODY_RIGHT_DOWN, BODY_LEFT_UP, BODY_LEFT_DOWN).size();
+                BODY_HORIZONTAL, BODY_VERTICAL, BODY_RIGHT_UP, BODY_RIGHT_DOWN, BODY_LEFT_UP, BODY_LEFT_DOWN);
     }
 
     public String getAimType(PointX pointX) {
@@ -208,8 +215,8 @@ public class Board extends AbstractBoard<Elements> {
             return "GOLD";
         } else if (isEnemyHead(pointX.getX(), pointX.getY())) {
             return "ENEMY_HEAD";
-        } else if (isPill(pointX.getX(), pointX.getY())) {
-            return "PILL";
+        } else if (isFuryPill(pointX.getX(), pointX.getY())) {
+            return "FURY_PILL";
         }
 
         return "undefined";

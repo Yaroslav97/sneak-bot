@@ -59,9 +59,9 @@ public class YourSolver implements Solver<Board> {
         Point sneak = board.getMe();
 
         System.out.println("X - " + sneak.getX() + ", Y - " + sneak.getY());
-        System.out.println("Size - " + board.getSneakSize());
-        System.out.println("Nearest apple - " + sneakService.findApple(board));
-        System.out.println("Direction - " + board.getDirection());
+        System.out.println("size - " + board.getSneakSize());
+        System.out.println("NEAREST AIM - " + sneakService.findAim(board));
+        System.out.println("DIRECTION - " + board.getDirection());
 
         return sneakService.getRout(board).toString();
     }

@@ -187,6 +187,37 @@ public class RoutService {
         return Direction.RIGHT;
     }
 
+    public Direction avoidStraitDeadlock(Board board) {
+        Point sneak = board.getMe();
+
+        if (board.getDirection() == Direction.UP) {
+            if (isSafety(board, new PointX(sneak.getX() + 1, sneak.getY()))) {
+                return Direction.RIGHT;
+            } else if (isSafety(board, new PointX(sneak.getX() - 1, sneak.getY()))) {
+                return Direction.LEFT;
+            }
+        } else if (board.getDirection() == Direction.DOWN) {
+            if (isSafety(board, new PointX(sneak.getX() - 1, sneak.getY()))) {
+                return Direction.LEFT;
+            } else if (isSafety(board, new PointX(sneak.getX() + 1, sneak.getY()))) {
+                return Direction.RIGHT;
+            }
+        } else if (board.getDirection() == Direction.LEFT) {
+            if (isSafety(board, new PointX(sneak.getX(), sneak.getY() + 1))) {
+                return Direction.UP;
+            } else if (isSafety(board, new PointX(sneak.getX(), sneak.getY() - 1))) {
+                return Direction.DOWN;
+            }
+        } else if (board.getDirection() == Direction.RIGHT) {
+            if (isSafety(board, new PointX(sneak.getX(), sneak.getY() + 1))) {
+                return Direction.UP;
+            }
+        }
+        System.out.println("No way to avoid strait deadlock");
+
+        return findSafetyWay(board);
+    }
+
     private boolean isSafety(Board board, PointX pointX) {
         if (board.isStone(pointX.getX(), pointX.getY()) && board.getSneakSize() < SNEAK_MIN_SIZE) {
             return false;

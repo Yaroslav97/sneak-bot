@@ -21,11 +21,15 @@ public class SneakService {
 
         Point sneak = board.getMe();
         PointX location = new PointX(sneak.getX(), sneak.getY());
-        PointX appleLocation = findApple(board);
+        PointX appleLocation = findAim(board);
 
         System.out.println("GOAL - " + board.getAimType(appleLocation));
 
         RoutService routService = new RoutService();
+
+        if (isDeadLock(board, appleLocation)) {
+            return routService.avoidStraitDeadlock(board);
+        }
 
         Direction direction = routService.getDirection(board, sneak, location, appleLocation);
 
@@ -40,17 +44,17 @@ public class SneakService {
         return safetyWay;
     }
 
-    public PointX findApple(Board board) {
+    public PointX findAim(Board board) {
         Point sneak = board.getMe();
         PointX location = new PointX(sneak.getX(), sneak.getY());
 
         Map<Double, PointX> map = new HashMap<>();
-        findAllApple(board).forEach(a -> map.put(getPointDist(location, a), a));
+        findAllAim(board).forEach(a -> map.put(getPointDist(location, a), a));
 
         return map.get(map.keySet().stream().mapToDouble(a -> a).min().getAsDouble());
     }
 
-    private List<PointX> findAllApple(Board board) {
+    private List<PointX> findAllAim(Board board) {
         List<PointX> list = new ArrayList<>();
 
         int mySneakSize = board.getSneakSize();
@@ -61,8 +65,8 @@ public class SneakService {
             System.out.println("Enemy size - " + totalSneakSize);
         }
 
-        for (int x = MIN; x < MAX; x++) {
-            for (int y = MIN; y < MAX; y++) {
+        for (int x = MIN; x <= MAX; x++) {
+            for (int y = MIN; y <= MAX; y++) {
                 PointX pointX = new PointX(x, y);
 
                 if (isAimReachable(board, pointX)) {
@@ -71,10 +75,15 @@ public class SneakService {
                     } else if (board.isStone(x, y) && mySneakSize >= SNEAK_MIN_SIZE &&
                             (snakeCount >= 2 || mySneakSize > totalSneakSize * 2)) {
                         list.add(pointX);
+                    } else if (board.isStone(x, y) && mySneakSize > SNEAK_MIN_SIZE &&
+                            (snakeCount > 2 || mySneakSize > totalSneakSize * 2.5)) {
+                        list.add(pointX);
+                    } else if (board.isFuryPill(x, y)) {
+//                        list.add(pointX);
                     } else if (board.isEnemyHead(x, y)) {
                         if (snakeCount == 1 && mySneakSize - 3 > totalSneakSize) {
                             list.add(pointX);
-                        } else if (snakeCount > 1 && mySneakSize - 3 > totalSneakSize - SNAKE_BASE_SIZE * snakeCount ) {
+                        } else if (snakeCount > 1 && mySneakSize - 3 > totalSneakSize - SNAKE_BASE_SIZE * snakeCount) {
                             list.add(pointX);
                         }
                     }
@@ -82,6 +91,50 @@ public class SneakService {
             }
         }
         return list;
+    }
+
+    private boolean isDeadLock(Board board, PointX pointX) {
+        int wallCount = 0;
+
+        if (board.getDirection() == Direction.UP) {
+            if (board.isWall(pointX.getX() + 1, pointX.getY() + 1)
+                    && !board.isWall(pointX.getX(), pointX.getY() + 1)) {
+                wallCount += 1;
+            }
+            if (board.isWall(pointX.getX() - 1, pointX.getY() + 1)
+                    && !board.isWall(pointX.getX(), pointX.getY() + 1)) {
+                wallCount += 1;
+            }
+        } else if (board.getDirection() == Direction.LEFT) {
+            if (board.isWall(pointX.getX() - 1, pointX.getY() + 1)
+                    && !board.isWall(pointX.getX() - 1, pointX.getY())) {
+                wallCount += 1;
+            }
+            if (board.isWall(pointX.getX() - 1, pointX.getY() - 1)
+                    && !board.isWall(pointX.getX() - 1, pointX.getY())) {
+                wallCount += 1;
+            }
+        } else if (board.getDirection() == Direction.DOWN) {
+            if (board.isWall(pointX.getX() - 1, pointX.getY() - 1)
+                    && !board.isWall(pointX.getX(), pointX.getY() - 1)) {
+                wallCount += 1;
+            }
+            if (board.isWall(pointX.getX() + 1, pointX.getY() - 1)
+                    && !board.isWall(pointX.getX() - 1, pointX.getY() - 1)) {
+                wallCount += 1;
+            }
+        } else if (board.getDirection() == Direction.RIGHT) {
+            if (board.isWall(pointX.getX() + 1, pointX.getY() - 1)
+                    && !board.isWall(pointX.getX(), pointX.getY() - 1)) {
+                wallCount += 1;
+            }
+            if (board.isWall(pointX.getX(), pointX.getY() - 2)
+                    && !board.isWall(pointX.getX(), pointX.getY() - 1)) {
+                wallCount += 1;
+            }
+        }
+
+        return wallCount == 2;
     }
 
     private boolean isAimReachable(Board board, PointX pointX) {
@@ -99,7 +152,7 @@ public class SneakService {
         if (board.isWall(pointX.getX(), pointX.getY() - 1)) {
             stoneCount += 1;
         }
-       return stoneCount <= 1;
+        return stoneCount <= 1;
     }
 
     private double getPointDist(PointX a, PointX b) {
